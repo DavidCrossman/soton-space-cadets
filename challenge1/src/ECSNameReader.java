@@ -17,16 +17,21 @@ public final class ECSNameReader {
 
         System.out.print("Email ID: ");
 
-        String spec;
+        String userInput;
         try {
-            spec = "https://www.ecs.soton.ac.uk/people/%s".formatted(reader.readLine());
+            userInput = reader.readLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        if (!userInput.matches("\\w+")) {
+            System.out.println("Invalid input");
+            return;
+        }
+
         URL url;
         try {
-            url = new URL(spec);
+            url = new URL("https://www.ecs.soton.ac.uk/people/%s".formatted(userInput));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -29,5 +31,31 @@ public final class Util {
             throw new RuntimeException(e);
         }
         return data;
+    }
+
+    /**
+     * Checks if the given cookie authorises access to the domain <a href="https://secure.ecs.soton.ac.uk">https://secure.ecs.soton.ac.uk</a>
+     * @param cookie The cookie, formatted "name=value"
+     * @return Whether the given cookie succeeded authorisation
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean checkCookie(String cookie) {
+        URL url;
+        try {
+            url = new URL("https://secure.ecs.soton.ac.uk");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        URLConnection connection;
+        try {
+            connection = url.openConnection();
+            connection.setRequestProperty("Cookie", cookie);
+            connection.connect();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "Apache".equals(connection.getHeaderField("Server"));
     }
 }
