@@ -10,18 +10,20 @@ public class Main {
                 --Select--
                 1. ECS Name Reader
                 2. Secure ECS Name Reader
+                3. Secure ECS Related People
                 >\040""");
 
-        String input;
+        String userInput;
         try {
-            input = reader.readLine();
+            userInput = reader.readLine();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        switch (input) {
+        switch (userInput) {
             case "1" -> ECSNameReader.run();
             case "2" -> SecureECSNameReader.run();
+            case "3" -> SecureECSRelatedPeople.run();
             default -> System.out.println("Not an option");
         }
     }

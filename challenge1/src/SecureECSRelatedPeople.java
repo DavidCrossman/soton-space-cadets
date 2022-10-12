@@ -4,13 +4,13 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Matcher;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class SecureECSNameReader {
-    private SecureECSNameReader() {}
+public final class SecureECSRelatedPeople {
+    private SecureECSRelatedPeople() {}
 
     public static void run() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -45,7 +45,7 @@ public class SecureECSNameReader {
 
         URL url;
         try {
-            url = new URL("https://secure.ecs.soton.ac.uk/people/%s".formatted(userInput));
+            url = new URL("https://secure.ecs.soton.ac.uk/people/%s/related_people".formatted(userInput));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -58,20 +58,15 @@ public class SecureECSNameReader {
             throw new RuntimeException(e);
         }
 
-        final Pattern namePattern = Pattern.compile("(?<=(<span itemprop=\"name\">))[\\w ]+");
+        final Pattern namePattern = Pattern.compile("<a href=\"https://secure\\.ecs\\.soton\\.ac\\.uk/people/(\\w+)\">([\\w ]+)");
 
-        Optional<String> name = Util.getConnectionData(connection).lines()
-                .map(line -> {
-                    Matcher m = namePattern.matcher(line.strip().replaceAll("'", "\""));
-                    return m.find() ? m.group() : null;
-                })
-                .filter(Objects::nonNull)
-                .findAny();
+        Set<String> relatedPeople = Util.getConnectionData(connection).lines()
+                .filter(line -> line.startsWith("<a class=\"email\""))
+                .flatMap(line -> namePattern.matcher(line.replaceAll("'", "\"")).results()
+                        .map(result -> "%s (%s)".formatted(result.group(2), result.group(1)))
+                        .filter(Predicate.not(String::isEmpty)))
+                .collect(Collectors.toSet());
 
-        if (name.isPresent()) {
-            System.out.println(name.get());
-        } else {
-            System.out.println("Could not find name");
-        }
+        relatedPeople.forEach(System.out::println);
     }
 }
