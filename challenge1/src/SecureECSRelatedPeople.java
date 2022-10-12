@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -61,10 +60,9 @@ public final class SecureECSRelatedPeople {
         final Pattern namePattern = Pattern.compile("<a href=\"https://secure\\.ecs\\.soton\\.ac\\.uk/people/(\\w+)\">([\\w ]+)");
 
         Set<String> relatedPeople = Util.getConnectionData(connection).lines()
-                .filter(line -> line.startsWith("<a class=\"email\""))
                 .flatMap(line -> namePattern.matcher(line.replaceAll("'", "\"")).results()
-                        .map(result -> "%s (%s)".formatted(result.group(2), result.group(1)))
-                        .filter(Predicate.not(String::isEmpty)))
+                        .filter(result -> result.groupCount() > 0 && !userInput.equals(result.group(1)))
+                        .map(result -> "%s (%s)".formatted(result.group(2), result.group(1))))
                 .collect(Collectors.toSet());
 
         relatedPeople.forEach(System.out::println);
