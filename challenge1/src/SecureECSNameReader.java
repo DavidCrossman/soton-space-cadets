@@ -4,9 +4,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
+import java.util.function.Predicate;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public class SecureECSNameReader {
@@ -61,17 +61,11 @@ public class SecureECSNameReader {
         final Pattern namePattern = Pattern.compile("(?<=(<span itemprop=\"name\">))[\\w ]+");
 
         Optional<String> name = Util.getConnectionData(connection).lines()
-                .map(line -> {
-                    Matcher m = namePattern.matcher(line.strip().replaceAll("'", "\""));
-                    return m.find() ? m.group() : null;
-                })
-                .filter(Objects::nonNull)
+                .flatMap(line -> namePattern.matcher(line.strip().replaceAll("'", "\"")).results()
+                        .map(MatchResult::group))
+                .filter(Predicate.not(String::isEmpty))
                 .findAny();
 
-        if (name.isPresent()) {
-            System.out.println(name.get());
-        } else {
-            System.out.println("Could not find name");
-        }
+        System.out.println(name.orElse("Could not find name"));
     }
 }

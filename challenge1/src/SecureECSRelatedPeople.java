@@ -57,7 +57,8 @@ public final class SecureECSRelatedPeople {
             throw new RuntimeException(e);
         }
 
-        final Pattern namePattern = Pattern.compile("<a href=\"https://secure\\.ecs\\.soton\\.ac\\.uk/people/(\\w+)\">([\\w ]+)");
+        final Pattern namePattern = Pattern.compile(
+                "<a href=\"https://secure\\.ecs\\.soton\\.ac\\.uk/people/(\\w+)\">([\\w ]+)");
 
         Set<String> relatedPeople = Util.getConnectionData(connection).lines()
                 .flatMap(line -> namePattern.matcher(line.replaceAll("'", "\"")).results()

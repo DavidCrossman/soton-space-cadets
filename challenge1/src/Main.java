@@ -11,6 +11,7 @@ public class Main {
                 1. ECS Name Reader
                 2. Secure ECS Name Reader
                 3. Secure ECS Related People
+                4. Anagram
                 >\040""");
 
         String userInput;
@@ -24,6 +25,7 @@ public class Main {
             case "1" -> ECSNameReader.run();
             case "2" -> SecureECSNameReader.run();
             case "3" -> SecureECSRelatedPeople.run();
+            case "4" -> Anagram.run();
             default -> System.out.println("Not an option");
         }
     }
