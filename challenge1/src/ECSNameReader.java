@@ -4,9 +4,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
+import java.util.function.Predicate;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public final class ECSNameReader {
@@ -46,19 +46,11 @@ public final class ECSNameReader {
         final Pattern namePattern = Pattern.compile("(?<=(content=\"))[\\w ]+");
 
         Optional<String> name = Util.getConnectionData(connection).lines()
-                .map(String::strip)
-                .filter(line -> line.startsWith("<meta property=\"og:title\""))
-                .map(line -> {
-                    Matcher m = namePattern.matcher(line);
-                    return m.find() ? m.group() : null;
-                })
-                .filter(Objects::nonNull)
+                .filter(line -> line.contains("og:title"))
+                .flatMap(line -> namePattern.matcher(line).results().map(MatchResult::group))
+                .filter(Predicate.not(String::isEmpty))
                 .findAny();
 
-        if (name.isPresent()) {
-            System.out.println(name.get());
-        } else {
-            System.out.println("Could not find name");
-        }
+        System.out.println(name.orElse("Could not find name"));
     }
 }
