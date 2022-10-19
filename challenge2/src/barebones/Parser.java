@@ -1,11 +1,24 @@
 package barebones;
 
-import barebones.tree.Number;
-import barebones.tree.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+
+/** Backus-Naur form:
+ * <pre>{@literal
+ * <identifier> ::= IDENTIFIER
+ * <number> ::= NUMBER
+ * <value> ::= <identifier> | <number>
+ * <comparator> ::= NOT
+ * <expression-tail> ::= E | <comparator> <value>
+ * <expression> ::= <value> <expression-tail>
+ * <clear> ::= CLEAR <identifier>
+ * <increment> ::= INCREMENT <identifier>
+ * <decrement> ::= DECREMENT <identifier>
+ * <while> ::= WHILE <expression> DO END_STATEMENT <program> END
+ * <statement> ::= <clear> | <increment> | <decrement> | <while>
+ * <program> ::= E | <statement> END_STATEMENT <program>}</pre>
+ */
 
 public final class Parser {
     private static final ArrayList<Token.Type> programStartTokens = new ArrayList<>(Arrays.asList(Token.Type.CLEAR,
@@ -58,7 +71,7 @@ public final class Parser {
         }
     }
 
-    private Tree parseNumber() {
+    private Number parseNumber() {
         Token number = expectNext(Token.Type.NUMBER);
         long value;
         try {
@@ -69,11 +82,11 @@ public final class Parser {
         return new Number(value);
     }
 
-    private Tree parseIdentifier() {
+    private Identifier parseIdentifier() {
         return new Identifier(expectNext(Token.Type.IDENTIFIER).getData());
     }
 
-    private Tree parseValue() {
+    private Expression parseValue() {
         Optional<Token> token = peek();
         if (token.isEmpty()) {
             throw new RuntimeException("Expected value");
@@ -84,7 +97,7 @@ public final class Parser {
         return parseIdentifier();
     }
 
-    private Tree parseExpressionTail(Tree lhs) {
+    private Expression parseExpressionTail(Expression lhs) {
         Optional<Token> token = peek();
 
         if (token.isEmpty()) {
@@ -100,21 +113,21 @@ public final class Parser {
         };
     }
 
-    private Tree parseExpression() {
+    private Expression parseExpression() {
         return parseExpressionTail(parseValue());
     }
 
-    private Tree parseWhile() {
+    private Statement parseWhile() {
         expectNext(Token.Type.WHILE);
-        Tree condition = parseExpression();
+        Expression condition = parseExpression();
         expectNext(Token.Type.DO);
         expectNext(Token.Type.END_STATEMENT);
-        Tree block = parseProgram();
+        Program block = parseProgram();
         expectNext(Token.Type.END);
         return new While(condition, block);
     }
 
-    private Tree parseStatement() {
+    private Statement parseStatement() {
         Optional<Token> token = peek();
         if (token.isEmpty()) {
             throw new RuntimeException("Expected statement");
@@ -137,19 +150,19 @@ public final class Parser {
         };
     }
 
-    private Tree parseProgram() {
+    private Program parseProgram() {
         Optional<Token> token = peek();
         if (token.isEmpty() || !programStartTokens.contains(token.get().getType())) {
             return null;
         }
-        Tree statement = parseStatement();
+        Statement statement = parseStatement();
         expectNext(Token.Type.END_STATEMENT);
-        return new EndStatement(statement, parseProgram());
+        return new Program(statement, parseProgram());
     }
 
-    public static Optional<Tree> parse(ArrayList<Token> tokens) {
+    public static Optional<Program> parse(ArrayList<Token> tokens) {
         Parser parser = new Parser(tokens);
-        Optional<Tree> program = Optional.ofNullable(parser.parseProgram());
+        Optional<Program> program = Optional.ofNullable(parser.parseProgram());
         parser.eof();
         return program;
     }
