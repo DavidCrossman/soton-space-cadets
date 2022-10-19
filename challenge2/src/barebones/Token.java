@@ -1,3 +1,5 @@
+package barebones;
+
 public class Token {
     public enum Type {
         END_STATEMENT,
@@ -23,6 +25,21 @@ public class Token {
                 case END -> "end\\b";
                 case IDENTIFIER -> "[a-zA-Z]\\w*";
                 case NUMBER -> "\\d++(?=\\s|;|$)";
+            };
+        }
+
+        String text() {
+            return switch (this) {
+                case END_STATEMENT -> "';'";
+                case NOT -> "'not'";
+                case CLEAR -> "'clear'";
+                case INCREMENT -> "'incr'";
+                case DECREMENT -> "'decr'";
+                case WHILE -> "'while'";
+                case DO -> "'do'";
+                case END -> "'end'";
+                case IDENTIFIER -> "identifier";
+                case NUMBER -> "number";
             };
         }
     }

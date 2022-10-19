@@ -1,3 +1,6 @@
+import barebones.Lexer;
+import barebones.Parser;
+
 public class Main {
     public static void main(String[] args) {
         String program = """
@@ -23,9 +26,7 @@ public class Main {
                    decr X;
                 end;""";
 
-        program.lines().flatMap(line -> Lexer.lex(line).stream())
-                .forEach(token -> System.out.println(token.getData() == null ?
-                        "[%s]".formatted(token.getType().toString()) :
-                        "[%s, %s]".formatted(token.getType().toString(), token.getData())));
+        Parser.parse(Lexer.lex(program)).ifPresent(System.out::println);
+
     }
 }
