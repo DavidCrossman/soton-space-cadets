@@ -1,21 +1,17 @@
-package barebones.tree;
+package barebones;
 
 import java.util.HashMap;
 
-public final class Decrement extends Tree {
+public final class Decrement extends Statement {
     private final Identifier identifier;
 
-    public Decrement(Tree identifier) {
-        this.identifier = (Identifier) identifier;
+    public Decrement(Identifier identifier) {
+        this.identifier = identifier;
     }
 
     @Override
     public String toString() {
         return "Decrement %s".formatted(identifier);
-    }
-
-    public Identifier getIdentifier() {
-        return identifier;
     }
 
     @Override

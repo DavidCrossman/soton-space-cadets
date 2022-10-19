@@ -1,4 +1,4 @@
-package barebones.tree;
+package barebones;
 
 import java.util.HashMap;
 
@@ -17,9 +17,6 @@ public final class Number extends Expression {
     public Long getValue() {
         return value;
     }
-
-    @Override
-    public void execute(HashMap<String, Long> state) {}
 
     @Override
     public Long evaluate(HashMap<String, Long> state) {
