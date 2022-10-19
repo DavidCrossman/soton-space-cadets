@@ -1,5 +1,7 @@
 package barebones.tree;
 
+import java.util.HashMap;
+
 /** Backus-Naur form:
  * <pre>{@literal
  * <identifier> ::= IDENTIFIER
@@ -17,8 +19,5 @@ package barebones.tree;
  */
 
 public abstract class Tree {
-    @Override
-    public String toString() {
-        return "";
-    }
+    public abstract void execute(HashMap<String, Long> state);
 }
