@@ -6,14 +6,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class Lexer {
-    private static final Pattern pattern = Pattern.compile(Arrays.stream(Token.Type.values())
-            .map(Token.Type::pattern)
+    private static final Pattern pattern = Pattern.compile("(?>//.*+)|" +
+            Arrays.stream(Token.Type.values()).map(Token.Type::pattern)
             .collect(Collectors.joining(")|(", "(", ")")) + "|[^\\s;]++");
 
     private Lexer() {}
 
     public static ArrayList<Token> lex(String text) {
-        return pattern.matcher(text).results().map(result -> {
+        return pattern.matcher(text).results()
+                .filter(result -> !result.group().startsWith("//"))
+                .map(result -> {
                     for (Token.Type type : Token.Type.values()) {
                         String group = result.group(type.ordinal() + 1);
                         if (group != null) return new Token(type, group);
