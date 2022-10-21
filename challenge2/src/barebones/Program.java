@@ -19,6 +19,8 @@ public final class Program extends Statement {
     @Override
     public void execute(HashMap<String, Long> state) {
         statement.execute(state);
+        state.forEach((name, value) -> System.out.printf("%s: %s%n", name, value));
+        System.out.println();
         if (rest != null) {
             rest.execute(state);
         }
