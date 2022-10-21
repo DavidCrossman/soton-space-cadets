@@ -30,10 +30,33 @@ public class Main {
                    decr X;
                 end;""";
 
+        String fibSource = """
+                clear first;
+                clear second;
+                incr second;
+                while n do;
+                    clear fib;
+                    decr n;
+                    while fib not first do;
+                        incr fib;
+                    end;
+                    clear first;
+                    while first not second do;
+                        incr fib;
+                        incr first;
+                    end;
+                    while second not fib do;
+                        incr second;
+                    end;
+                end;
+                """;
+
         Optional<Program> program = Parser.parse(Lexer.lex(source));
 
         if (program.isPresent()) {
-            HashMap<String, Long> state = new HashMap<>();
+            HashMap<String, Long> state = new HashMap<>() {{
+                put("n", 20L);
+            }};
             program.get().execute(state);
             state.forEach((name, value) -> System.out.printf("%s: %s%n", name, value));
         }

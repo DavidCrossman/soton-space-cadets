@@ -19,7 +19,7 @@ public final class While extends Statement {
     @Override
     public void execute(HashMap<String, Long> state) {
         while (!condition.evaluate(state).equals(0L)) {
-            block.execute(state);
+            if (block != null) block.execute(state);
         }
     }
 }
