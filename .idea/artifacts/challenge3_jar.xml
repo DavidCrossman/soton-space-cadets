@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="challenge3:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/challenge3_jar</output-path>
+    <root id="archive" name="barebones.jar">
+      <element id="module-output" name="challenge3" />
+    </root>
+  </artifact>
+</component>
