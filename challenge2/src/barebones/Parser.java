@@ -77,7 +77,7 @@ public final class Parser {
         try {
             value = Long.parseLong(number.getData());
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Invalid number");
+            throw new RuntimeException("Invalid number '%s'".formatted(number.getData()));
         }
         return new Number(value);
     }

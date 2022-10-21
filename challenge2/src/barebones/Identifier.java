@@ -20,6 +20,10 @@ public final class Identifier extends Expression {
 
     @Override
     public Long evaluate(HashMap<String, Long> state) {
-        return state.get(name);
+        Long val = state.get(name);
+        if (val == null) {
+            throw new RuntimeException("Variable \"%s\" is not defined".formatted(name));
+        }
+        return val;
     }
 }
