@@ -30,7 +30,6 @@ public class Main {
         if (program.isPresent()) {
             HashMap<String, Long> state = new HashMap<>();
             program.get().execute(state);
-            state.forEach((name, value) -> System.out.printf("%s: %s%n", name, value));
         }
     }
 }
