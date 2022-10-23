@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Increment extends Statement {
@@ -15,12 +16,12 @@ public final class Increment extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
+    public void execute(Deque<HashMap<String, Long>> state) {
         Long val = identifier.evaluate(state);
         if (val == Long.MAX_VALUE) {
             throw new RuntimeException("Variable \"%s\" exceeded the maximum value of %s"
                     .formatted(identifier.getName(), Long.MAX_VALUE));
         }
-        state.put(identifier.getName(), val + 1);
+        identifier.assign(state, val + 1);
     }
 }

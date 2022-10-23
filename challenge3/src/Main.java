@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,9 +30,12 @@ public class Main {
         Optional<Program> program = Parser.parse(Lexer.lex(source));
 
         if (program.isPresent()) {
-            HashMap<String, Long> state = new HashMap<>();
+            Deque<HashMap<String, Long>> state = new ArrayDeque<>() {{
+                push(new HashMap<>());
+            }};
             program.get().execute(state);
-            state.forEach((name, value) -> System.out.printf("%s: %s%n", name, value));
+            var scope = state.peek();
+            if (scope != null) scope.forEach((name, value) -> System.out.printf("%s: %s%n", name, value));
         }
     }
 }

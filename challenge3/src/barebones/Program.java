@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Program extends Statement {
@@ -17,7 +18,7 @@ public final class Program extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
+    public void execute(Deque<HashMap<String, Long>> state) {
         statement.execute(state);
         if (rest != null) {
             rest.execute(state);

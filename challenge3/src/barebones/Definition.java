@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public class Definition extends Statement {
@@ -17,11 +18,7 @@ public class Definition extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
-        if (identifier.exists(state)) {
-            throw new RuntimeException("Redefinition of variable \"%s\" in the scope"
-                    .formatted(identifier.getName()));
-        }
-        state.put(identifier.getName(), value == null ? null : value.evaluate(state));
+    public void execute(Deque<HashMap<String, Long>> state) {
+        identifier.define(state, value == null ? null : value.evaluate(state));
     }
 }

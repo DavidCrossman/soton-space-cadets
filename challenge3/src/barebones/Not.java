@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Not extends Expression {
@@ -16,7 +17,7 @@ public final class Not extends Expression {
     }
 
     @Override
-    public Long evaluate(HashMap<String, Long> state) {
+    public Long evaluate(Deque<HashMap<String, Long>> state) {
         if (lhs.evaluate(state).equals(rhs.evaluate(state))) {
             return 0L;
         } else return 1L;

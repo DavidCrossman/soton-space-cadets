@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Number extends Expression {
@@ -15,7 +16,7 @@ public final class Number extends Expression {
     }
 
     @Override
-    public Long evaluate(HashMap<String, Long> state) {
+    public Long evaluate(Deque<HashMap<String, Long>> state) {
         return value;
     }
 }
