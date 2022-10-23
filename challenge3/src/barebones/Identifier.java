@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Identifier extends Expression {
@@ -18,23 +19,47 @@ public final class Identifier extends Expression {
         return name;
     }
 
-    public boolean exists(HashMap<String, Long> state) {
-        return state.containsKey(name);
+    public boolean exists(Deque<HashMap<String, Long>> state) {
+        for (var scope : state) {
+            if (scope.containsKey(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void checkExists(HashMap<String, Long> state) {
-        if (!exists(state)) {
-            throw new RuntimeException("Variable \"%s\" does not exist".formatted(name));
+    public void define(Deque<HashMap<String, Long>> state, Long value) {
+        var scope = state.peek();
+        if (scope == null) {
+            throw new RuntimeException("Current scope does not exist");
         }
+        if (scope.containsKey(name)) {
+            throw new RuntimeException("Redefinition of variable \"%s\" in the scope".formatted(name));
+        }
+        scope.put(name, value);
+    }
+
+    public void assign(Deque<HashMap<String, Long>> state, Long value) {
+        for (var scope : state) {
+            if (scope.containsKey(name)) {
+                scope.put(name, value);
+                return;
+            }
+        }
+        throw new RuntimeException("Variable \"%s\" does not exist".formatted(name));
     }
 
     @Override
-    public Long evaluate(HashMap<String, Long> state) {
-        checkExists(state);
-        Long val = state.get(name);
-        if (val == null) {
-            throw new RuntimeException("Variable \"%s\" is not defined".formatted(name));
+    public Long evaluate(Deque<HashMap<String, Long>> state) {
+        for (var scope : state) {
+            if (scope.containsKey(name)) {
+                Long val = scope.get(name);
+                if (val == null) {
+                    throw new RuntimeException("Variable \"%s\" is not defined".formatted(name));
+                }
+                return val;
+            }
         }
-        return val;
+        throw new RuntimeException("Variable \"%s\" does not exist".formatted(name));
     }
 }

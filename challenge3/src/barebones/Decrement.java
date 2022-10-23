@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Decrement extends Statement {
@@ -15,12 +16,12 @@ public final class Decrement extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
+    public void execute(Deque<HashMap<String, Long>> state) {
         Long val = identifier.evaluate(state);
         if (val <= 0) {
             throw new RuntimeException("Attempted to reduce variable \"%s\" below zero"
                     .formatted(identifier.getName()));
         }
-        state.put(identifier.getName(), val - 1);
+        identifier.assign(state, val - 1);
     }
 }

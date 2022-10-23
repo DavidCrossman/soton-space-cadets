@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public class Assignment extends Statement {
@@ -17,8 +18,7 @@ public class Assignment extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
-        identifier.checkExists(state);
-        state.put(identifier.getName(), value.evaluate(state));
+    public void execute(Deque<HashMap<String, Long>> state) {
+        identifier.assign(state, value.evaluate(state));
     }
 }

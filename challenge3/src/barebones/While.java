@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class While extends Statement {
@@ -13,11 +14,11 @@ public final class While extends Statement {
 
     @Override
     public String toString() {
-        return "While %s do {\n%s\n} end".formatted(condition, block == null ? "" : block);
+        return "While %s do \n%s\n end".formatted(condition, block == null ? "" : block);
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
+    public void execute(Deque<HashMap<String, Long>> state) {
         while (!condition.evaluate(state).equals(0L)) {
             if (block != null) block.execute(state);
         }

@@ -1,5 +1,6 @@
 package barebones;
 
+import java.util.Deque;
 import java.util.HashMap;
 
 public final class Clear extends Statement {
@@ -15,7 +16,11 @@ public final class Clear extends Statement {
     }
 
     @Override
-    public void execute(HashMap<String, Long> state) {
-        state.put(identifier.getName(), 0L);
+    public void execute(Deque<HashMap<String, Long>> state) {
+        if (identifier.exists(state)) {
+            identifier.assign(state, 0L);
+        } else {
+            identifier.define(state, 0L);
+        }
     }
 }

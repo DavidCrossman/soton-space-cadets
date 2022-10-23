@@ -15,17 +15,19 @@ import java.util.Optional;
  * <definition-tail> ::= E | ASSIGN <expression>
  * <definition> ::= VAR <identifier> <definition-tail>
  * <assignment> ::= <identifier> ASSIGN <expression>
+ * <scope> ::= OPEN_SCOPE <program> CLOSE_SCOPE
  * <clear> ::= CLEAR <identifier>
  * <increment> ::= INCREMENT <identifier>
  * <decrement> ::= DECREMENT <identifier>
  * <while> ::= WHILE <expression> DO END_STATEMENT <program> END
- * <statement> ::= <definition> | <assignment> | <clear> | <increment> | <decrement> | <while>
+ * <statement> ::= <definition> | <assignment> | <scope> | <clear> | <increment> | <decrement> | <while>
  * <program> ::= E | <statement> END_STATEMENT <program>}</pre>
  */
 
 public final class Parser {
     private static final ArrayList<Token.Type> programStartTokens = new ArrayList<>(Arrays.asList(Token.Type.VAR,
-            Token.Type.IDENTIFIER, Token.Type.CLEAR, Token.Type.INCREMENT, Token.Type.DECREMENT, Token.Type.WHILE));
+            Token.Type.IDENTIFIER, Token.Type.OPEN_SCOPE, Token.Type.CLEAR, Token.Type.INCREMENT, Token.Type.DECREMENT,
+            Token.Type.WHILE));
     private final ArrayList<Token> tokens;
     private int index;
 
@@ -138,6 +140,13 @@ public final class Parser {
         return new Assignment(identifier, parseExpression());
     }
 
+    private Scope parseScope() {
+        expectNext(Token.Type.OPEN_SCOPE);
+        Scope scope = new Scope(parseProgram());
+        expectNext(Token.Type.CLOSE_SCOPE);
+        return scope;
+    }
+
     private Statement parseWhile() {
         expectNext(Token.Type.WHILE);
         Expression condition = parseExpression();
@@ -156,6 +165,7 @@ public final class Parser {
         return switch (token.get().getType()) {
             case VAR -> parseDefinition();
             case IDENTIFIER -> parseAssignment();
+            case OPEN_SCOPE -> parseScope();
             case CLEAR -> {
                 next();
                 yield new Clear(parseIdentifier());

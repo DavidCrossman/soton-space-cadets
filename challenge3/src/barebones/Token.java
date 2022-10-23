@@ -3,6 +3,8 @@ package barebones;
 public class Token {
     public enum Type {
         END_STATEMENT,
+        OPEN_SCOPE,
+        CLOSE_SCOPE,
         NOT,
         VAR,
         ASSIGN,
@@ -18,6 +20,8 @@ public class Token {
         String pattern() {
             return switch (this) {
                 case END_STATEMENT -> ";";
+                case OPEN_SCOPE -> "\\{";
+                case CLOSE_SCOPE -> "\\}";
                 case NOT -> "not\\b";
                 case VAR -> "var\\b";
                 case ASSIGN -> "=";
@@ -35,6 +39,8 @@ public class Token {
         String text() {
             return switch (this) {
                 case END_STATEMENT -> "';'";
+                case OPEN_SCOPE -> "'{'";
+                case CLOSE_SCOPE -> "'}'";
                 case NOT -> "'not'";
                 case VAR -> "'var'";
                 case ASSIGN -> "'='";
