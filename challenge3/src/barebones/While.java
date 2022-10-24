@@ -14,7 +14,7 @@ public final class While extends Statement {
 
     @Override
     public String toString() {
-        return "While %s do \n%s\n end".formatted(condition, block == null ? "" : block);
+        return "While %s do \n%s\nend".formatted(condition, block == null ? "" : block);
     }
 
     @Override

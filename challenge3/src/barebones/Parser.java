@@ -9,7 +9,7 @@ import java.util.Optional;
  * <identifier> ::= IDENTIFIER
  * <number> ::= NUMBER
  * <value> ::= <identifier> | <number>
- * <comparator> ::= NOT
+ * <comparator> ::= IS | NOT | LESS_EQ | GREATER_EQ | LESS | GREATER
  * <expression-tail> ::= E | <comparator> <value>
  * <expression> ::= <value> <expression-tail>
  * <definition-tail> ::= E | ASSIGN <expression>
@@ -110,9 +110,29 @@ public final class Parser {
         }
 
         return switch (token.get().getType()) {
+            case IS -> {
+                next();
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.IS);
+            }
             case NOT -> {
                 next();
-                yield new Not(lhs, parseValue()); //TODO parseExpression()
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.NOT);
+            }
+            case LESS_EQ -> {
+                next();
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.LESS_EQ);
+            }
+            case GREATER_EQ -> {
+                next();
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.GREATER_EQ);
+            }
+            case LESS -> {
+                next();
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.LESS);
+            }
+            case GREATER -> {
+                next();
+                yield new Comparison(lhs, parseValue(), Comparison.Operator.GREATER);
             }
             default -> lhs;
         };

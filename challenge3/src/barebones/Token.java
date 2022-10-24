@@ -5,7 +5,12 @@ public class Token {
         END_STATEMENT,
         OPEN_SCOPE,
         CLOSE_SCOPE,
+        IS,
         NOT,
+        LESS_EQ,
+        GREATER_EQ,
+        LESS,
+        GREATER,
         VAR,
         ASSIGN,
         CLEAR,
@@ -22,7 +27,12 @@ public class Token {
                 case END_STATEMENT -> ";";
                 case OPEN_SCOPE -> "\\{";
                 case CLOSE_SCOPE -> "\\}";
-                case NOT -> "not\\b";
+                case IS -> "==|is\\b";
+                case NOT -> "!=|not\\b";
+                case LESS_EQ -> "<=";
+                case GREATER_EQ -> ">=";
+                case LESS -> "<";
+                case GREATER -> ">";
                 case VAR -> "var\\b";
                 case ASSIGN -> "=";
                 case CLEAR -> "clear\\b";
@@ -41,7 +51,12 @@ public class Token {
                 case END_STATEMENT -> "';'";
                 case OPEN_SCOPE -> "'{'";
                 case CLOSE_SCOPE -> "'}'";
-                case NOT -> "'not'";
+                case IS -> "'=='";
+                case NOT -> "'!='";
+                case LESS_EQ -> "'<='";
+                case GREATER_EQ -> "'>='";
+                case LESS -> "'<'";
+                case GREATER -> "'>'";
                 case VAR -> "'var'";
                 case ASSIGN -> "'='";
                 case CLEAR -> "'clear'";
