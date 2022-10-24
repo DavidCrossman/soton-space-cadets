@@ -12,6 +12,10 @@ public final class Program extends Statement {
         this.rest = rest;
     }
 
+    public Program(Statement statement) {
+        this(statement, null);
+    }
+
     @Override
     public String toString() {
         return rest == null ? "[%s];".formatted(statement) : "[%s];\n%s".formatted(statement, rest);

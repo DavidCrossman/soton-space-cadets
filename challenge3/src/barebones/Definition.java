@@ -12,6 +12,10 @@ public class Definition extends Statement {
         this.value = value;
     }
 
+    public Definition(Identifier identifier) {
+        this(identifier, null);
+    }
+
     @Override
     public String toString() {
         return value == null ? "Var %s".formatted(identifier) : "Var %s = %s".formatted(identifier, value);

@@ -1,10 +1,10 @@
 var fib;
-var n = 20;
-{ // Variables defined in this scope will not exist at the end of the program
+var n = 29;
+if n > 0 then; {
     var n = n; // Make local copy of 'n'
     var first = 0;
     var second = 1;
-    while n > 0 do; {
+    while n > 1 do; {
         decr n;
         fib = first;
         first = 0;
@@ -14,5 +14,8 @@ var n = 20;
         end;
         second = fib;
     }; end;
-    fib = first;
-}; // Only 'fib' and 'n' exist
+    fib = second;
+}; else;
+    fib = 0; // 0th fibonacci number is 0
+end;
+// Only 'fib' and 'n' exist
