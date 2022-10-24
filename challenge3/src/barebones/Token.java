@@ -16,6 +16,9 @@ public class Token {
         CLEAR,
         INCREMENT,
         DECREMENT,
+        IF,
+        THEN,
+        ELSE,
         WHILE,
         DO,
         END,
@@ -38,6 +41,9 @@ public class Token {
                 case CLEAR -> "clear\\b";
                 case INCREMENT -> "incr\\b";
                 case DECREMENT -> "decr\\b";
+                case IF -> "if\\b";
+                case THEN -> "then\\b";
+                case ELSE -> "else\\b";
                 case WHILE -> "while\\b";
                 case DO -> "do\\b";
                 case END -> "end\\b";
@@ -62,6 +68,9 @@ public class Token {
                 case CLEAR -> "'clear'";
                 case INCREMENT -> "'incr'";
                 case DECREMENT -> "'decr'";
+                case IF -> "'if'";
+                case THEN -> "'then'";
+                case ELSE -> "'else'";
                 case WHILE -> "'while'";
                 case DO -> "'do'";
                 case END -> "'end'";

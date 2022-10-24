@@ -19,15 +19,18 @@ import java.util.Optional;
  * <clear> ::= CLEAR <identifier>
  * <increment> ::= INCREMENT <identifier>
  * <decrement> ::= DECREMENT <identifier>
+ * <else-tail> ::= <if> | END_STATEMENT <program> END_STATEMENT
+ * <if-tail> ::= END END_STATEMENT | ELSE <else-tail>
+ * <if> ::= IF <expression> THEN END_STATEMENT <program> <if-tail>
  * <while> ::= WHILE <expression> DO END_STATEMENT <program> END
- * <statement> ::= <definition> | <assignment> | <scope> | <clear> | <increment> | <decrement> | <while>
+ * <statement> ::= <definition> | <assignment> | <scope> | <clear> | <increment> | <decrement> | <if> | <while>
  * <program> ::= E | <statement> END_STATEMENT <program>}</pre>
  */
 
 public final class Parser {
     private static final ArrayList<Token.Type> programStartTokens = new ArrayList<>(Arrays.asList(Token.Type.VAR,
             Token.Type.IDENTIFIER, Token.Type.OPEN_SCOPE, Token.Type.CLEAR, Token.Type.INCREMENT, Token.Type.DECREMENT,
-            Token.Type.WHILE));
+            Token.Type.IF, Token.Type.WHILE));
     private final ArrayList<Token> tokens;
     private int index;
 
@@ -145,13 +148,12 @@ public final class Parser {
     private Definition parseDefinition() {
         expectNext(Token.Type.VAR);
         Identifier identifier = parseIdentifier();
-        Expression expression = null;
         Optional<Token> token = peek();
         if (token.isPresent() && token.get().getType() == Token.Type.ASSIGN) {
             next();
-            expression = parseExpression();
+            return new Definition(identifier, parseExpression());
         }
-        return new Definition(identifier, expression);
+        return new Definition(identifier);
     }
 
     private Assignment parseAssignment() {
@@ -167,7 +169,32 @@ public final class Parser {
         return scope;
     }
 
-    private Statement parseWhile() {
+    private If parseIfTail(Expression condition, Program ifBlock) {
+        Optional<Token> token = peek();
+        if (token.isPresent() && token.get().getType() == Token.Type.END) {
+            next();
+            return new If(condition, ifBlock);
+        }
+        expectNext(Token.Type.ELSE);
+        token = peek();
+        if (token.isPresent() && token.get().getType() == Token.Type.IF) {
+            return new If(condition, ifBlock, new Program(parseIf()));
+        }
+        expectNext(Token.Type.END_STATEMENT);
+        Program elseBlock = parseProgram();
+        expectNext(Token.Type.END);
+        return new If(condition, ifBlock, elseBlock);
+    }
+
+    private If parseIf() {
+        expectNext(Token.Type.IF);
+        Expression condition = parseExpression();
+        expectNext(Token.Type.THEN);
+        expectNext(Token.Type.END_STATEMENT);
+        return parseIfTail(condition, parseProgram());
+    }
+
+    private While parseWhile() {
         expectNext(Token.Type.WHILE);
         Expression condition = parseExpression();
         expectNext(Token.Type.DO);
@@ -198,6 +225,7 @@ public final class Parser {
                 next();
                 yield new Decrement(parseIdentifier());
             }
+            case IF -> parseIf();
             case WHILE -> parseWhile();
             default -> throw new RuntimeException("Invalid statement");
         };
