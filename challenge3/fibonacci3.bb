@@ -4,11 +4,11 @@ var n = 20;
     var n = n; // Make local copy of 'n'
     var first = 0;
     var second = 1;
-    while n do; {
+    while n > 0 do; {
         decr n;
         fib = first;
         first = 0;
-        while first not second do; // Add 'second' to 'fib'
+        while first < second do; // Add 'second' to 'fib'
             incr fib;
             incr first;
         end;
