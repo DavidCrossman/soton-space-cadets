@@ -10,11 +10,6 @@ public final class Identifier extends Expression {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "\"%s\"".formatted(name);
-    }
-
     public void define(Deque<HashMap<String, Long>> state, Long value) {
         var scope = state.peek();
         if (scope == null) {

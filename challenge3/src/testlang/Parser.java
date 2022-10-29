@@ -194,36 +194,6 @@ public final class Parser {
             };
             return parseRelationTail(new BinaryOperator(lhs, parseAddTerm(), operator));
         }
-        /*if (token.get().getType() == Token.Type.EQUALS) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> left.equals(right) ? 1L : 0L ));
-        }
-        if (token.get().getType() == Token.Type.NOT_EQ) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> !left.equals(right) ? 1L : 0L ));
-        }
-        if (token.get().getType() == Token.Type.LESS_EQ) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> left <= right ? 1L : 0L ));
-        }
-        if (token.get().getType() == Token.Type.GREATER_EQ) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> left >= right ? 1L : 0L ));
-        }
-        if (token.get().getType() == Token.Type.LESS) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> left < right ? 1L : 0L ));
-        }
-        if (token.get().getType() == Token.Type.GREATER) {
-            next();
-            return parseRelationTail(new BinaryOperator(lhs, parseTerm(),
-                    (left, right) -> left > right ? 1L : 0L ));
-        }*/
         return lhs;
     }
 
@@ -265,7 +235,28 @@ public final class Parser {
         return parseOrTail(parseAndTerm());
     }
 
+    private IfExpression parseIfExpression() {
+        expectNext(Token.Type.IF);
+        Expression condition = parseExpression();
+        expectNext(Token.Type.OPEN_BRACE);
+        Expression ifValue = parseExpression();
+        expectNext(Token.Type.CLOSE_BRACE);
+        expectNext(Token.Type.ELSE);
+        Optional<Token> token = peek();
+        if (token.isPresent() && token.get().getType() == Token.Type.IF) {
+            return new IfExpression(condition, ifValue, parseIfExpression());
+        }
+        expectNext(Token.Type.OPEN_BRACE);
+        Expression elseValue = parseExpression();
+        expectNext(Token.Type.CLOSE_BRACE);
+        return new IfExpression(condition, ifValue, elseValue);
+    }
+
     private Expression parseExpression() {
+        Optional<Token> token = peek();
+        if (token.isPresent() && token.get().getType() == Token.Type.IF) {
+            return parseIfExpression();
+        }
         return parseOrTerm();
     }
 

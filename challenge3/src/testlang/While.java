@@ -13,11 +13,6 @@ public final class While extends Statement {
     }
 
     @Override
-    public String toString() {
-        return "While %s do \n%s\nend".formatted(condition, block == null ? "" : block);
-    }
-
-    @Override
     public void execute(Deque<HashMap<String, Long>> state) {
         while (!condition.evaluate(state).equals(0L)) {
             if (block != null) block.execute(state);

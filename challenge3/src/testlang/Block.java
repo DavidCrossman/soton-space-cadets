@@ -17,11 +17,6 @@ public final class Block extends Statement {
     }
 
     @Override
-    public String toString() {
-        return "{\n%s\n}".formatted(block == null ? "" : block);
-    }
-
-    @Override
     public void execute(Deque<HashMap<String, Long>> state) {
         if (block == null) return;
         if (isScoped) state.push(new HashMap<>());

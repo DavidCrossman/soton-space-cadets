@@ -11,11 +11,6 @@ public final class Number extends Expression {
     }
 
     @Override
-    public String toString() {
-        return "'%s'".formatted(value);
-    }
-
-    @Override
     public Long evaluate(Deque<HashMap<String, Long>> state) {
         return value;
     }
