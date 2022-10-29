@@ -7,13 +7,11 @@ var n = 153;
     var fizz_num = 3;
     var buzz_num = 5;
 
-    if (n / fizz_num) * fizz_num == n && (n / buzz_num) * buzz_num == n {
-        result = fizzbuzz;
+    result = if (n / fizz_num) * fizz_num == n && (n / buzz_num) * buzz_num == n {
+        fizzbuzz
     } else if (n / fizz_num) * fizz_num == n {
-        result = fizz;
+        fizz
     } else if (n / buzz_num) * buzz_num == n {
-        result = buzz;
-    } else {
-        result = n;
-    }
+        buzz
+    } else { n };
 }

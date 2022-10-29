@@ -17,11 +17,6 @@ public final class Definition extends Statement {
     }
 
     @Override
-    public String toString() {
-        return value == null ? "Var %s".formatted(identifier) : "Var %s = %s".formatted(identifier, value);
-    }
-
-    @Override
     public void execute(Deque<HashMap<String, Long>> state) {
         identifier.define(state, value == null ? null : value.evaluate(state));
     }

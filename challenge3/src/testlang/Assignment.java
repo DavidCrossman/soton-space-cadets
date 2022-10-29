@@ -13,11 +13,6 @@ public final class Assignment extends Statement {
     }
 
     @Override
-    public String toString() {
-        return "%s = %s".formatted(identifier, value);
-    }
-
-    @Override
     public void execute(Deque<HashMap<String, Long>> state) {
         identifier.assign(state, value.evaluate(state));
     }

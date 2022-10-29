@@ -17,11 +17,6 @@ public final class Program extends Statement {
     }
 
     @Override
-    public String toString() {
-        return rest == null ? "[%s];".formatted(statement) : "[%s];\n%s".formatted(statement, rest);
-    }
-
-    @Override
     public void execute(Deque<HashMap<String, Long>> state) {
         statement.execute(state);
         if (rest != null) {
