@@ -1,6 +1,6 @@
-import barebones.Lexer;
-import barebones.Parser;
-import barebones.Program;
+import testlang.Lexer;
+import testlang.Parser;
+import testlang.Program;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
