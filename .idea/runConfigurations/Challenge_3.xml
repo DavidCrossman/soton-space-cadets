@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Challenge 3" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="19" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="challenge3" />
+    <option name="PROGRAM_PARAMETERS" value="test/testlang/fizzbuzz.tl" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/challenge3" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
