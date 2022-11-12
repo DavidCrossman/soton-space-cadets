@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.david.spirograph.SpirographController" alignment="CENTER" spacing="8">
+    <Button text="Draw" onAction="#draw"/>
+    <Canvas fx:id="canvas" width="400" height="400"/>
+</VBox>
