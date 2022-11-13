@@ -3,7 +3,45 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.david.spirograph.SpirographController" alignment="CENTER" spacing="8">
-    <Button text="Draw" onAction="#draw"/>
-    <Canvas fx:id="canvas" width="400" height="400"/>
+    <HBox spacing="4" prefWidth="Infinity">
+        <padding>
+            <Insets left="16" right="16"/>
+        </padding>
+        <Text text="Offset"/>
+        <Slider fx:id="sliderOffset" max="200" prefWidth="500" minorTickCount="9" majorTickUnit="50"
+                value="169" showTickLabels="true" showTickMarks="true"/>
+        <Text fx:id="textOffset"/>
+    </HBox>
+    <HBox spacing="4" prefWidth="Infinity">
+        <padding>
+            <Insets left="16" right="16"/>
+        </padding>
+        <Text text="Inner radius"/>
+        <Slider fx:id="sliderInnerRadius" max="200" prefWidth="500" minorTickCount="9" majorTickUnit="50"
+                value="23" showTickLabels="true" showTickMarks="true"/>
+        <Text fx:id="textInnerRadius"/>
+    </HBox>
+    <HBox spacing="4" prefWidth="Infinity">
+        <padding>
+            <Insets left="16" right="16"/>
+        </padding>
+        <Text text="Outer radius"/>
+        <Slider fx:id="sliderOuterRadius" max="200" prefWidth="500" minorTickCount="4" majorTickUnit="50"
+                value="111" showTickLabels="true" showTickMarks="true"/>
+        <Text fx:id="textOuterRadius"/>
+    </HBox>
+    <HBox spacing="32">
+        <padding>
+            <Insets left="64" right="64"/>
+        </padding>
+        <Button fx:id="drawButton" maxWidth="Infinity" text="Draw" onAction="#draw" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="stopButton" maxWidth="Infinity" text="Stop" onAction="#stop" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" text="Clear" onAction="#clear" HBox.hgrow="ALWAYS"/>
+    </HBox>
+    <Canvas fx:id="canvas" width="550" height="550"/>
 </VBox>
