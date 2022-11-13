@@ -2,11 +2,24 @@ package com.david.spirograph;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
-public class SpirographController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class SpirographController implements Initializable {
+    @FXML
+    private Button drawButton, stopButton;
+    @FXML
+    private Text textOffset, textInnerRadius, textOuterRadius;
+    @FXML
+    private Slider sliderOffset, sliderInnerRadius, sliderOuterRadius;
     @FXML
     private Canvas canvas;
 
@@ -21,7 +34,7 @@ public class SpirographController {
     private final AnimationTimer animation;
 
     public SpirographController() {
-        timeStep = 0.0001;
+        timeStep = 0.00004;
         lastUpdateTime = 0;
         startTime = 0;
         firstFrame = true;
@@ -48,11 +61,17 @@ public class SpirographController {
                     double centreX = canvas.getWidth() * .5;
                     double centreY = canvas.getHeight() * .5;
 
-                    double r = 134, R = 81, O = 99;
-                    double x = (R - r) * Math.cos(t * speed) + O * Math.cos(((R - r) / r) * t * speed);
-                    double y = (R - r) * Math.sin(t * speed) - O * Math.sin(((R - r) / r) * t * speed);
-                    double lastX = (R - r) * Math.cos(lastUpdateTime * speed) + O * Math.cos(((R - r) / r) * lastUpdateTime * speed);
-                    double lastY = (R - r) * Math.sin(lastUpdateTime * speed) - O * Math.sin(((R - r) / r) * lastUpdateTime * speed);
+                    double innerRadius = (int) sliderInnerRadius.getValue();
+                    double outerRadius = (int) sliderOuterRadius.getValue();
+                    double offset = (int) sliderOffset.getValue();
+                    double x = (outerRadius - innerRadius) * Math.cos(t * speed) +
+                            offset * Math.cos(((outerRadius - innerRadius) / innerRadius) * t * speed);
+                    double y = (outerRadius - innerRadius) * Math.sin(t * speed) -
+                            offset * Math.sin(((outerRadius - innerRadius) / innerRadius) * t * speed);
+                    double lastX = (outerRadius - innerRadius) * Math.cos(lastUpdateTime * speed) +
+                            offset * Math.cos(((outerRadius - innerRadius) / innerRadius) * lastUpdateTime * speed);
+                    double lastY = (outerRadius - innerRadius) * Math.sin(lastUpdateTime * speed) -
+                            offset * Math.sin(((outerRadius - innerRadius) / innerRadius) * lastUpdateTime * speed);
 
                     context.setStroke(Color.RED);
                     context.strokeLine(lastX + centreX, lastY + centreY, x + centreX, y + centreY);
@@ -65,12 +84,46 @@ public class SpirographController {
 
     @FXML
     protected void draw() {
-        GraphicsContext context = canvas.getGraphicsContext2D();
-        context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        sliderOffset.setDisable(true);
+        sliderInnerRadius.setDisable(true);
+        sliderOuterRadius.setDisable(true);
+        drawButton.setDisable(true);
+        stopButton.setDisable(false);
 
         firstFrame = true;
         lastUpdateTime = 0;
         timer = 0;
         animation.start();
+    }
+
+    @FXML
+    protected void stop() {
+        sliderOffset.setDisable(false);
+        sliderInnerRadius.setDisable(false);
+        sliderOuterRadius.setDisable(false);
+        drawButton.setDisable(false);
+        stopButton.setDisable(true);
+
+        animation.stop();
+    }
+
+    @FXML
+    protected void clear() {
+        GraphicsContext context = canvas.getGraphicsContext2D();
+        context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        textOffset.setText(String.valueOf((int) sliderOffset.getValue()));
+        textInnerRadius.setText(String.valueOf((int) sliderInnerRadius.getValue()));
+        textOuterRadius.setText(String.valueOf((int) sliderOuterRadius.getValue()));
+        sliderOffset.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                textOffset.textProperty().setValue(String.valueOf(newValue.intValue())));
+        sliderOuterRadius.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                textOuterRadius.textProperty().setValue(String.valueOf(newValue.intValue())));
+        sliderInnerRadius.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                textInnerRadius.textProperty().setValue(String.valueOf(newValue.intValue())));
+        stopButton.setDisable(true);
     }
 }
