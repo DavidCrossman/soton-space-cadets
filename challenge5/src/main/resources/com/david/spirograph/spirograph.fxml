@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.david.spirograph.SpirographController" alignment="TOP_CENTER" spacing="8">
+    <GridPane>
+        <padding>
+            <Insets left="32" right="32"/>
+        </padding>
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints/>
+            <ColumnConstraints minWidth="30"/>
+        </columnConstraints>
+        <Text text="Offset" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
+        <Slider fx:id="sliderOffset" max="200" value="169"
+                GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+            <padding>
+                <Insets left="8" right="8"/>
+            </padding>
+        </Slider>
+        <Text fx:id="textOffset" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <Text text="Inner radius" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
+        <Slider fx:id="sliderInnerRadius" max="200" value="23"
+                GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+            <padding>
+                <Insets left="8" right="8"/>
+            </padding>
+        </Slider>
+        <Text fx:id="textInnerRadius" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <Text text="Outer radius" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
+        <Slider fx:id="sliderOuterRadius" max="200" value="111"
+                GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+            <padding>
+                <Insets left="8" right="8"/>
+            </padding>
+        </Slider>
+        <Text fx:id="textOuterRadius" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+    </GridPane>
+    <HBox spacing="32">
+        <padding>
+            <Insets left="64" right="64"/>
+        </padding>
+        <Button fx:id="drawButton" maxWidth="Infinity" text="Draw" onAction="#draw" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="stopButton" maxWidth="Infinity" text="Stop" onAction="#stop" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" text="Clear" onAction="#clear" HBox.hgrow="ALWAYS"/>
+    </HBox>
+    <Canvas fx:id="canvas" width="550" height="550"/>
+    <GridPane>
+        <padding>
+            <Insets left="32" right="32"/>
+        </padding>
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints/>
+            <ColumnConstraints minWidth="30"/>
+        </columnConstraints>
+        <Text text="Speed" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
+        <Slider fx:id="sliderSpeed" max="11" value="5.6"
+                GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+            <padding>
+                <Insets left="8" right="8"/>
+            </padding>
+        </Slider>
+        <Text fx:id="textSpeed" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <Text text="Time step" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
+        <Slider fx:id="sliderTimeStep" max="11" value="5.3"
+                GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+            <padding>
+                <Insets left="8" right="8"/>
+            </padding>
+        </Slider>
+        <Text fx:id="textTimeStep" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+    </GridPane>
+</VBox>
