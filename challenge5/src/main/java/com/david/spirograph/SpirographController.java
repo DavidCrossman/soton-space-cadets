@@ -17,29 +17,23 @@ public class SpirographController implements Initializable {
     @FXML
     private Button drawButton, stopButton;
     @FXML
-    private Text textOffset, textInnerRadius, textOuterRadius;
+    private Text textOffset, textInnerRadius, textOuterRadius, textSpeed, textTimeStep;
     @FXML
-    private Slider sliderOffset, sliderInnerRadius, sliderOuterRadius;
+    private Slider sliderOffset, sliderInnerRadius, sliderOuterRadius, sliderSpeed, sliderTimeStep;
     @FXML
     private Canvas canvas;
 
-    private final double timeStep;
     private long startTime;
     private double lastUpdateTime;
     private double timer;
-    private final double speed;
-
     private boolean firstFrame;
-
     private final AnimationTimer animation;
 
     public SpirographController() {
-        timeStep = 0.00004;
         lastUpdateTime = 0;
         startTime = 0;
         firstFrame = true;
         timer = 0;
-        speed = 50;
 
         animation = new AnimationTimer() {
             @Override
@@ -53,6 +47,9 @@ public class SpirographController implements Initializable {
                 timer += now * .000000001 - lastUpdateTime;
 
                 double t = lastUpdateTime;
+                double timeStep = Math.pow(2, sliderTimeStep.getValue()) * .000001;
+                double speed = Math.pow(2, sliderSpeed.getValue());
+
                 while (timer > timeStep) {
                     timer -= timeStep;
                     t += timeStep;
@@ -89,6 +86,8 @@ public class SpirographController implements Initializable {
         sliderOuterRadius.setDisable(true);
         drawButton.setDisable(true);
         stopButton.setDisable(false);
+        sliderSpeed.setDisable(true);
+        sliderTimeStep.setDisable(true);
 
         firstFrame = true;
         lastUpdateTime = 0;
@@ -103,6 +102,8 @@ public class SpirographController implements Initializable {
         sliderOuterRadius.setDisable(false);
         drawButton.setDisable(false);
         stopButton.setDisable(true);
+        sliderSpeed.setDisable(false);
+        sliderTimeStep.setDisable(false);
 
         animation.stop();
     }
@@ -118,12 +119,18 @@ public class SpirographController implements Initializable {
         textOffset.setText(String.valueOf((int) sliderOffset.getValue()));
         textInnerRadius.setText(String.valueOf((int) sliderInnerRadius.getValue()));
         textOuterRadius.setText(String.valueOf((int) sliderOuterRadius.getValue()));
+        textSpeed.setText("%.2f".formatted(sliderSpeed.getValue() + 1));
+        textTimeStep.setText("%.2f".formatted(sliderTimeStep.getValue() + 1));
         sliderOffset.valueProperty().addListener((observableValue, oldValue, newValue) ->
                 textOffset.textProperty().setValue(String.valueOf(newValue.intValue())));
         sliderOuterRadius.valueProperty().addListener((observableValue, oldValue, newValue) ->
                 textOuterRadius.textProperty().setValue(String.valueOf(newValue.intValue())));
         sliderInnerRadius.valueProperty().addListener((observableValue, oldValue, newValue) ->
                 textInnerRadius.textProperty().setValue(String.valueOf(newValue.intValue())));
+        sliderSpeed.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                textSpeed.textProperty().setValue("%.2f".formatted(newValue.doubleValue() + 1)));
+        sliderTimeStep.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                textTimeStep.textProperty().setValue("%.2f".formatted(newValue.doubleValue() + 1)));
         stopButton.setDisable(true);
     }
 }
