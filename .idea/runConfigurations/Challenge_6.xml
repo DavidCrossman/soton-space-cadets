@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Challenge 6" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.david.challenge6.CircleDetectorApplication" />
+    <module name="challenge6" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/challenge6" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

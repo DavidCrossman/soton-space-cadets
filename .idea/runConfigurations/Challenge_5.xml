@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Challenge 5" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.david.spirograph.SpirographApplication" />
+    <module name="challenge5" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/challenge5" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
