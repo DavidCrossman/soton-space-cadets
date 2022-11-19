@@ -8,6 +8,8 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 
 import java.net.URL;
+import java.time.Clock;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -18,11 +20,14 @@ public class CircleDetectorController implements Initializable {
     private final Image originalImage, greyscaleImage, edgeImage, thresholdImage, circleImage;
 
     public CircleDetectorController() {
-        originalImage = new Image("file:src/main/resources/com/david/challenge6/test1.png");
+        originalImage = new Image("file:src/main/resources/com/david/challenge6/test2.png");
         greyscaleImage = createGreyscaleImage(originalImage);
         edgeImage = createEdgeImage(greyscaleImage);
         thresholdImage = createThresholdImage(edgeImage);
+        Clock clock = Clock.tickMillis(ZoneId.systemDefault());
+        long now = clock.millis();
         Circle circle = findCircle(edgeImage);
+        System.out.println(clock.millis() - now);
         circle.x++;
         circle.y++;
         circleImage = createCircleImage(originalImage, circle);
@@ -135,33 +140,62 @@ public class CircleDetectorController implements Initializable {
         int[][][] acc = new int[width][height][rMax - rMin];
         Arrays.stream(acc).forEach(a -> Arrays.stream(a).forEach(b -> Arrays.fill(b, 0)));
 
+        final int divisions = 50;
+
+        float[] sinMap = new float[divisions], cosMap = new float[divisions];
+        for (int angleStep = 0; angleStep < divisions; angleStep++) {
+            sinMap[angleStep] = (float) Math.sin(Math.TAU * angleStep / (float) divisions);
+            cosMap[angleStep] = (float) Math.cos(Math.TAU * angleStep / (float) divisions);
+        }
+
+        /*try (ForkJoinPool threadPool = new ForkJoinPool(8)) {
+            threadPool.submit(() -> IntStream.rangeClosed(rMin, rMax - 1).boxed().toList()
+                    .parallelStream().forEach(r -> {
+                        for (int y = 0; y < height; y++) {
+                            for (int x = 0; x < width; x++) {
+                                if (pixels[y][x] < 60) continue;
+                                for (int angleStep = 0; angleStep < divisions; angleStep++) {
+                                    int b = (int) (y - r * sinMap[angleStep]);
+                                    int a = (int) (x - r * cosMap[angleStep]);
+                                    if (a >= 0 && b >= 0 && a < width && b < height) acc[a][b][r - rMin]++;
+                                }
+                            }
+                        }
+                    })
+            ).get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
+
         for (int r = rMin; r < rMax; r++) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    for (float theta = 0; theta < Math.TAU; theta += .1f) {
-                        int b = (int) (y - r * Math.sin(theta));
-                        int a = (int) (x - r * Math.cos(theta));
-                        if (a >= 0 && b >= 0 && a < width && b < height && pixels[y][x] > 60) acc[a][b][r - rMin]++;
+                    if (pixels[y][x] < 60) continue;
+                    for (int angleStep = 0; angleStep < divisions; angleStep++) {
+                        int b = (int) (y - r * sinMap[angleStep]);
+                        int a = (int) (x - r * cosMap[angleStep]);
+                        if (a >= 0 && b >= 0 && a < width && b < height) acc[a][b][r - rMin]++;
                     }
                 }
             }
         }
 
-        int maxVal = 0, maxX = 0, maxY = 0, maxR = 0;
+        int maxVal = 0;
+        Circle circle = new Circle(0, 0, 0);
         for (int r = rMin; r < rMax; r++) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     if (acc[x][y][r - rMin] > maxVal) {
                         maxVal = acc[x][y][r - rMin];
-                        maxX = x;
-                        maxY = y;
-                        maxR = r;
+                        circle.x = x;
+                        circle.y = y;
+                        circle.r = r;
                     }
                 }
             }
         }
 
-        return new Circle(maxX, maxY, maxR);
+        return circle;
     }
 
     private WritableImage createCircleImage(Image originalImage, Circle circle) {
