@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<GridPane alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="com.david.challenge6.CircleDetectorController">
-    <ImageView fx:id="originalImageView" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-    <ImageView fx:id="greyscaleImageView" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-    <ImageView fx:id="edgeImageView" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.halignment="CENTER"/>
-    <ImageView fx:id="thresholdImageView" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
-    <ImageView fx:id="circleImageView" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER"/>
-</GridPane>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.GridPane?>
+<TilePane prefRows="4" prefColumns="2" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.david.challenge6.CircleDetectorController">
+    <ImageView fx:id="circleImageView" scaleX="2" scaleY="2"/>
+    <GridPane style="-fx-background-color:black;">
+        <ImageView fx:id="originalImageView" GridPane.rowIndex="0"  GridPane.columnIndex="0"/>
+        <ImageView fx:id="greyscaleImageView" GridPane.rowIndex="0"  GridPane.columnIndex="1"/>
+        <ImageView fx:id="edgeImageView" GridPane.rowIndex="1"  GridPane.columnIndex="0"
+                   GridPane.halignment="CENTER"/>
+        <ImageView fx:id="thresholdImageView" GridPane.rowIndex="1"  GridPane.columnIndex="1"
+                   GridPane.halignment="CENTER"/>
+    </GridPane>
+</TilePane>

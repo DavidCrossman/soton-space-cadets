@@ -1,36 +1,43 @@
 package com.david.challenge6;
 
+import com.github.sarxos.webcam.Webcam;
+import javafx.animation.AnimationTimer;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 
-import java.net.URL;
-import java.time.Clock;
-import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
-public class CircleDetectorController implements Initializable {
+public class CircleDetectorController {
     @FXML
     private ImageView originalImageView, greyscaleImageView, edgeImageView, thresholdImageView, circleImageView;
-
-    private final Image originalImage, greyscaleImage, edgeImage, thresholdImage, circleImage;
+    private Image originalImage, greyscaleImage, edgeImage, thresholdImage, circleImage;
+    private final Webcam webcam;
 
     public CircleDetectorController() {
-        originalImage = new Image("file:src/main/resources/com/david/challenge6/test2.png");
-        greyscaleImage = createGreyscaleImage(originalImage);
-        edgeImage = createEdgeImage(greyscaleImage);
-        thresholdImage = createThresholdImage(edgeImage);
-        Clock clock = Clock.tickMillis(ZoneId.systemDefault());
-        long now = clock.millis();
-        Circle circle = findCircle(edgeImage);
-        System.out.println(clock.millis() - now);
-        circle.x++;
-        circle.y++;
-        circleImage = createCircleImage(originalImage, circle);
+        webcam = Webcam.getWebcams().get(0);
+        webcam.open();
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                originalImage = SwingFXUtils.toFXImage(webcam.getImage(), null);
+                greyscaleImage = createGreyscaleImage(originalImage);
+                edgeImage = createEdgeImage(greyscaleImage);
+                thresholdImage = createThresholdImage(edgeImage);
+                Circle circle = findCircle(edgeImage);
+                circle.x++;
+                circle.y++;
+                circleImage = createCircleImage(originalImage, circle);
+                originalImageView.setImage(originalImage);
+                greyscaleImageView.setImage(greyscaleImage);
+                edgeImageView.setImage(edgeImage);
+                thresholdImageView.setImage(thresholdImage);
+                circleImageView.setImage(circleImage);
+            }
+        }.start();
     }
 
     private WritableImage createGreyscaleImage(Image originalImage) {
@@ -136,7 +143,7 @@ public class CircleDetectorController implements Initializable {
             pixels[i / width][i % width] = buffer[i * 4] & 0xFF;
         }
 
-        final int rMin = 30, rMax = Math.min(width, height) / 2;
+        final int rMin = Math.max(width, height) / 20, rMax = Math.min(width, height) / 2;
         int[][][] acc = new int[width][height][rMax - rMin];
         Arrays.stream(acc).forEach(a -> Arrays.stream(a).forEach(b -> Arrays.fill(b, 0)));
 
@@ -208,8 +215,8 @@ public class CircleDetectorController implements Initializable {
 
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                if (Math.abs((i - circle.x) * (i - circle.x) +
-                        (j - circle.y) * (j - circle.y) - circle.r * circle.r) < 200) {
+                if (Math.abs(Math.sqrt((i - circle.x) * (i - circle.x) +
+                        (j - circle.y) * (j - circle.y)) -circle.r) < 2) {
                     int index = j * width * 4 + i * 4;
                     buffer[index + 2] = (byte) 0xFF;
                     buffer[index + 1] = (byte) 0x0;
@@ -222,14 +229,5 @@ public class CircleDetectorController implements Initializable {
             getPixelWriter().setPixels(0, 0, width, height, PixelFormat.getByteBgraInstance(),
                     buffer, 0, width * 4);
         }};
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        originalImageView.setImage(originalImage);
-        greyscaleImageView.setImage(greyscaleImage);
-        edgeImageView.setImage(edgeImage);
-        thresholdImageView.setImage(thresholdImage);
-        circleImageView.setImage(circleImage);
     }
 }
