@@ -10,6 +10,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class CircleDetectorController {
     @FXML
@@ -17,20 +18,32 @@ public class CircleDetectorController {
     private Image originalImage, greyscaleImage, edgeImage, thresholdImage, circleImage;
     private final Webcam webcam;
 
+    private Circle prevCircle;
+
     public CircleDetectorController() {
         webcam = Webcam.getWebcams().get(0);
         webcam.open();
         new AnimationTimer() {
+            private int numConsecutive = 0;
+
             @Override
             public void handle(long now) {
                 originalImage = SwingFXUtils.toFXImage(webcam.getImage(), null);
                 greyscaleImage = createGreyscaleImage(originalImage);
                 edgeImage = createEdgeImage(greyscaleImage);
                 thresholdImage = createThresholdImage(edgeImage);
-                Circle circle = findCircle(edgeImage);
-                circle.x++;
-                circle.y++;
-                circleImage = createCircleImage(originalImage, circle);
+
+                numConsecutive = prevCircle == null ? 0 : numConsecutive + 1;
+                if (numConsecutive > 22) {
+                    numConsecutive = 0;
+                    prevCircle = null;
+                }
+
+                Optional<Circle> circle = findCircle(thresholdImage, prevCircle);
+                circleImage = circle.map(c -> createCircleImage(originalImage, new Circle(c.x + 1, c.y + 1, c.r)))
+                        .orElse(originalImage);
+                prevCircle = circle.orElse(null);
+
                 originalImageView.setImage(originalImage);
                 greyscaleImageView.setImage(greyscaleImage);
                 edgeImageView.setImage(edgeImage);
@@ -40,7 +53,7 @@ public class CircleDetectorController {
         }.start();
     }
 
-    private WritableImage createGreyscaleImage(Image originalImage) {
+    private Image createGreyscaleImage(Image originalImage) {
         int width = (int) originalImage.getWidth();
         int height = (int) originalImage.getHeight();
         byte[] buffer = new byte[width * height * 4];
@@ -58,7 +71,7 @@ public class CircleDetectorController {
         }};
     }
 
-    private WritableImage createEdgeImage(Image greyscaleImage) {
+    private Image createEdgeImage(Image greyscaleImage) {
         int greyscaleWidth = (int) greyscaleImage.getWidth();
         int greyscaleHeight = (int) greyscaleImage.getHeight();
         byte[] greyscaleBuffer = new byte[greyscaleWidth * greyscaleHeight * 4];
@@ -111,7 +124,7 @@ public class CircleDetectorController {
         }};
     }
 
-    private WritableImage createThresholdImage(Image edgeImage) {
+    private Image createThresholdImage(Image edgeImage) {
         int width = (int) edgeImage.getWidth();
         int height = (int) edgeImage.getHeight();
         byte[] buffer = new byte[width * height * 4];
@@ -130,7 +143,7 @@ public class CircleDetectorController {
         }};
     }
 
-    private Circle findCircle(Image thresholdImage) {
+    private Optional<Circle> findCircle(Image thresholdImage, Circle prevCircle) {
         int width = (int) thresholdImage.getWidth();
         int height = (int) thresholdImage.getHeight();
         byte[] buffer = new byte[width * height * 4];
@@ -143,7 +156,17 @@ public class CircleDetectorController {
             pixels[i / width][i % width] = buffer[i * 4] & 0xFF;
         }
 
-        final int rMin = Math.max(width, height) / 20, rMax = Math.min(width, height) / 2;
+        int rMin = Math.max(width, height) / 20, rMax = Math.min(width, height) / 2,
+                xMin = 0, xMax = width - 1, yMin = 0, yMax = height - 1;
+        if (prevCircle != null) {
+            rMin = Math.max(rMin, prevCircle.r - 6);
+            rMax = Math.min(rMax, prevCircle.r + 6);
+            xMin = Math.max(xMin, prevCircle.x - rMax - 15);
+            xMax = Math.min(xMax, prevCircle.x + rMax + 15);
+            yMin = Math.max(yMin, prevCircle.y - rMax - 15);
+            yMax = Math.min(yMax, prevCircle.y + rMax + 15);
+        }
+
         int[][][] acc = new int[width][height][rMax - rMin];
         Arrays.stream(acc).forEach(a -> Arrays.stream(a).forEach(b -> Arrays.fill(b, 0)));
 
@@ -155,33 +178,15 @@ public class CircleDetectorController {
             cosMap[angleStep] = (float) Math.cos(Math.TAU * angleStep / (float) divisions);
         }
 
-        /*try (ForkJoinPool threadPool = new ForkJoinPool(8)) {
-            threadPool.submit(() -> IntStream.rangeClosed(rMin, rMax - 1).boxed().toList()
-                    .parallelStream().forEach(r -> {
-                        for (int y = 0; y < height; y++) {
-                            for (int x = 0; x < width; x++) {
-                                if (pixels[y][x] < 60) continue;
-                                for (int angleStep = 0; angleStep < divisions; angleStep++) {
-                                    int b = (int) (y - r * sinMap[angleStep]);
-                                    int a = (int) (x - r * cosMap[angleStep]);
-                                    if (a >= 0 && b >= 0 && a < width && b < height) acc[a][b][r - rMin]++;
-                                }
-                            }
-                        }
-                    })
-            ).get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
-
         for (int r = rMin; r < rMax; r++) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    if (pixels[y][x] < 60) continue;
-                    for (int angleStep = 0; angleStep < divisions; angleStep++) {
-                        int b = (int) (y - r * sinMap[angleStep]);
-                        int a = (int) (x - r * cosMap[angleStep]);
-                        if (a >= 0 && b >= 0 && a < width && b < height) acc[a][b][r - rMin]++;
+            for (int y = yMin; y < yMax; y++) {
+                for (int x = xMin; x < xMax; x++) {
+                    if (pixels[y][x] > 0) {
+                        for (int angleStep = 0; angleStep < divisions; angleStep++) {
+                            int b = (int) (y - r * sinMap[angleStep]);
+                            int a = (int) (x - r * cosMap[angleStep]);
+                            if (a >= 0 && b >= 0 && a < width && b < height) acc[a][b][r - rMin]++;
+                        }
                     }
                 }
             }
@@ -190,8 +195,8 @@ public class CircleDetectorController {
         int maxVal = 0;
         Circle circle = new Circle(0, 0, 0);
         for (int r = rMin; r < rMax; r++) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                for (int x = xMin; x < xMax; x++) {
                     if (acc[x][y][r - rMin] > maxVal) {
                         maxVal = acc[x][y][r - rMin];
                         circle.x = x;
@@ -202,10 +207,10 @@ public class CircleDetectorController {
             }
         }
 
-        return circle;
+        return maxVal < (prevCircle == null ? 25 : 15) ? Optional.empty() : Optional.of(circle);
     }
 
-    private WritableImage createCircleImage(Image originalImage, Circle circle) {
+    private Image createCircleImage(Image originalImage, Circle circle) {
         int width = (int) originalImage.getWidth();
         int height = (int) originalImage.getHeight();
         byte[] buffer = new byte[width * height * 4];
