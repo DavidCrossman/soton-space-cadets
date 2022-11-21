@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="desktop" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.david.minesweeper.DesktopLauncher" />
+    <module name="challenge7.desktop.main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
